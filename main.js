@@ -21,6 +21,64 @@ const defaultStereoCamera = {
     farClippingDistance: 200    //decimiters
 };
 
+// WebSocket for sensor data
+let socket;
+let rotationMatrix = m4.identity(); // Rotation matrix from sensor data
+
+let initialRotationMatrix = null;  // Store the first sensor matrix 
+
+// Initialize WebSocket connection
+function initWebSocket() {
+    socket = new WebSocket("ws://192.168.1.143:8080/sensor/connect?type=android.sensor.rotation_vector");
+
+    socket.onopen = function () {
+        console.log("WebSocket connected");
+        socket.send("Requesting rotation vector data");
+    };
+
+    socket.onmessage = function (event) {
+        try {
+            const jsonData = JSON.parse(event.data);
+            const values = jsonData.values || [];
+            const rotationVector = [
+                values[0] || 0,
+                values[1] || 0,
+                values[2] || 0,
+                values.length > 3 ? values[3] : undefined
+            ];
+
+            let rawMatrix = getRotationMatrixFromVector(rotationVector);
+            let currentMatrix = rawMatrix;
+
+            // Save the first received matrix as a reference
+            if (!initialRotationMatrix) {
+                initialRotationMatrix = currentMatrix;
+            }
+
+            // Calculate inverse of the initial matrix
+            let inverseInitial = m4.inverse(initialRotationMatrix);
+
+            // Remove the effect of the initial rotation by applying the inverse
+            rotationMatrix = m4.multiply(currentMatrix, inverseInitial);
+
+        } catch (e) {
+            console.error("Error processing WebSocket data:", e);
+            rotationMatrix = m4.identity();
+        }
+    };
+
+    socket.onerror = function (error) {
+        console.error("WebSocket error:", error);
+        rotationMatrix = m4.identity();
+    };
+
+    socket.onclose = function () {
+        console.log("WebSocket closed, attempting to reconnect ...");
+        rotationMatrix = m4.identity();
+        setTimeout(initWebSocket, 5000);
+    };
+}
+
 // Constructor
 function ShaderProgram(name, program) {
     this.name = name;
@@ -89,14 +147,19 @@ function draw() {
         gl.disableVertexAttribArray(shProgram.iAttribTexCoord);
     }
 
-    /* Get the view matrix from the SimpleRotator object.*/
-    let modelView = spaceball.getViewMatrix();
-
-    let rotateToPointZero = m4.axisRotation([0.707, 0.707, 0], 0.7);
-    let translateToPointZero = m4.translation(0, 0, -10);
 
     const colorPolygon = new Float32Array([0.5, 0.5, 0.5, 1]);
     const colorEdge = new Float32Array([1, 1, 1, 1]);
+
+    /* Get the view matrix from the SimpleRotator object.*/
+    // let modelView = spaceball.getViewMatrix();
+
+    // let rotateToPointZero = m4.axisRotation([0.707, 0.707, 0], 0.7);
+    let rotateToPointZero = m4.axisRotation([0.0001, 0.001, 0], 0.0001);
+    let translateToPointZero = m4.translation(0, 0, -10);
+
+    let spaceballView = spaceball.getViewMatrix();
+    let modelView = m4.multiply(rotationMatrix, spaceballView);
 
     // The FIRST PASS (for the left eye)
     let matrLeftFrustum = stereoCam.calcLeftFrustum();
@@ -364,6 +427,9 @@ function init() {
     }).catch(function (err) {
         console.error("Error accessing webcam: " + err.name + ": " + err.message);
     });
+
+    // Initialize WebSocket for sensor data
+    initWebSocket()
 
     // setInterval(draw, 1 / 20);
     setInterval(draw, 1000 / 30);
