@@ -9,4 +9,4 @@ AR.js (https://github.com/jeromeetienne/ar.js)
 
 # Control task (var #17)
 ![plot](./screenshots/controlTask1.jpg)
-![plot](./screenshots/controlTask1.jpg)
+![plot](./screenshots/controlTask2.jpg)
