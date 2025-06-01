@@ -2,112 +2,21 @@
 <html>
 
 <head>
-    <meta charset="UTF-8">
-    <title>MSVR PA#2 (var 17)</title>
-    <style>
-        body {
-            background-color: #EEEEEE;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <!-- three.js library -->
+    <script src='ar_three.js/three.min.js'></script>
+    <script src="ar_three.js/stats.min.js"></script>
 
-        .row {
-            display: flex;
-            gap: 60px;
-            margin: 10px 0;
-        }
+    <!-- ar.js -->
+    <script src="ar_three.js/ar.js"></script>
+    <script>THREEx.ArToolkitContext.baseURL = '../'</script>
 
-        .side {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            width: 440px;
-            height: 25px;
-        }
-
-        .side.right {
-            flex-direction: row-reverse;
-            text-align: right;
-        }
-
-        canvas {
-            background-color: red;
-            border-radius: 40px;
-        }
-    </style>
-
-    <script src="./Utils/trackball-rotator.js"></script>
-    <script src="./Utils/m4.js"></script>
-    <script src="./shader.gpu"></script>
-    <script src="./Model.js"></script>
-    <script src="./StereoCamera.js"></script>
-    <script src="./Texture.js"></script>
-    <script src="./main.js"></script>
-    <script src="./getRotationMatrixFromVector.js"></script>
+    <!-- Model.js for surface -->
+    <script src="Model.js"></script>
 </head>
 
-<body onload="init()">
-
-    <h2 style="margin: 5px;">An analytical surface "Corrugated sphere" with "Trackball" rotation</h2>
-
-    <p id="message" style="margin-top: 10px; text-align: center;">Drag your mouse on the cube to rotate it.<br>
-        (On a touch screen, you can use your finger.)</p>
-
-    <!-- Row 1 -->
-    <div class="row">
-        <div class="side left">
-            <label for="uSlider">U</label>
-            <input type="range" id="uSlider" value="24" min="1" max="60" step="1" style="width: 110px;">
-            <input type="number" id="uValue" value="24" min="1" max="60" step="1" style="width: 90px;">
-        </div>
-        <div class="side right">
-            <label for="vSlider">V</label>
-            <input type="range" id="vSlider" value="12" min="1" max="60" step="1" style="width: 110px;">
-            <input type="number" id="vValue" value="12" min="1" max="60" step="1" style="width: 90px;">
-
-        </div>
-    </div>
-
-    <!-- Row 2 -->
-    <div class="row">
-        <div class="side left">
-            <label for="eyeSeparation">Eye separation</label>
-            <input type="range" id="eyeSeparationSlider" value="0.2" min="0.01" max="2" step="0.01"
-                style="width: 110px;">
-            <input type="number" id="eyeSeparationValue" value="0.2" min="0.01" max="2" step="0.01"
-                style="width: 90px;">
-        </div>
-        <div class="side right">
-            <label for="fieldOfViewAngle">Field of view angle</label>
-            <input type="range" id="fieldOfViewAngleSlider" value="20" min="10" max="60" step="1" style="width: 110px;">
-            <input type="number" id="fieldOfViewAngleValue" value="20" min="10" max="60" step="1" style="width: 90px;">
-        </div>
-    </div>
-
-    <!-- Row 3 -->
-    <div class="row">
-        <div class="side left">
-            <label for="nearClippingDistance">Near clipping distance</label>
-            <input type="range" id="nearClippingDistanceSlider" value="8" min="1" max="20" step="0.1"
-                style="width: 110px;">
-            <input type="number" id="nearClippingDistanceValue" value="8" min="1" max="20" step="0.1"
-                style="width: 90px;">
-        </div>
-        <div class="side right">
-            <label for="convergenceDistance">Convergence distance</label>
-            <input type="range" id="convergenceDistanceSlider" value="25" min="10" max="50" step="0.1"
-                style="width: 110px;">
-            <input type="number" id="convergenceDistanceValue" value="25" min="10" max="30" step="0.1"
-                style="width: 90px;">
-
-        </div>
-    </div>
-
-    <div id="canvas-holder" style="margin-top: 10px;">
-        <canvas width="800" height="600" id="webglcanvas"></canvas>
-    </div>
-
+<body style='margin: 0px; overflow: hidden; font-family: Monospace;'>
+    <script src="main.js"></script>
 </body>
 
 </html>
